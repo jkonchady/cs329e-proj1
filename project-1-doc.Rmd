@@ -18,6 +18,7 @@ library(data.world)
 library(DT)
 library(plotly)
 library(lubridate)
+library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
