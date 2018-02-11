@@ -1,0 +1,35 @@
+---
+title: "RECS 2009"
+authors: "Ravi Goparaju, Jatin Konchady, Andrew Xiao, Paul Yun"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.world)
+library(DT)
+library(plotly)
+library(lubridate)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+regions <- data.world::query(data.world::qry_sql(
+ "   
+  	select * from energy 
+ "), 
+dataset = project)
+```
+
+
+
