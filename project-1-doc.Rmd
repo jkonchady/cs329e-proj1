@@ -1,6 +1,6 @@
 ---
 title: "RECS 2009"
-authors: "Ravi Goparaju, Jatin Konchady, Andrew Xiao, Paul Yun"
+author: "Ravi Goparaju, Jatin Konchady, Andrew Xiao, Paul Yun"
 resource_files:
 - .Renviron
 output:
@@ -22,6 +22,7 @@ library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<!--For the first input panel-->
 ```{r}
 project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
@@ -32,5 +33,10 @@ regions <- data.world::query(data.world::qry_sql(
 dataset = project)
 ```
 
-this is a change to the file
+##Data World stuff
+<p>Our data.world project can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009) and the  insights we've made can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009/insights)</p>
+<br>
 
+```{r}
+
+```
