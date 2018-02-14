@@ -33,7 +33,7 @@ regions <- data.world::query(data.world::qry_sql(
 dataset = project)
 ```
 
-##Data World stuff
+##Links to Data World
 <p>Our data.world project can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009) and the  insights we've made can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009/insights)</p>
 <br>
 
@@ -87,9 +87,6 @@ renderDataTable({
 })
 ```
 
-
-
-
 ```{r}
 project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
@@ -101,9 +98,6 @@ energy <- data.world::query(data.world::qry_sql(
  "), 
 dataset = project)
 ```
-
-
-
 
 ```{r}
 renderPlot({
@@ -117,17 +111,71 @@ plot = ggplot(energy, aes(x=energy$totrooms, y=energy$dollarel, color =
 )
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!--Jatin's stuff-->
+###Jatin's Stuff
+```{r}
+JatinProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+jat1 <- data.world::query(data.world::qry_sql(
+ "   
+  	select AVG(kwh), SUM(nhsldmem), nhsldmem
+    from energy
+    group by nhsldmem
+ "), 
+dataset = JatinProject)
+jat2 <- data.world::query(data.world::qry_sql(
+ "   
+  	select AVG(totrooms) as rooms, SUM(nhsldmem), nhsldmem
+    from energy
+    group by nhsldmem
+ "), 
+dataset = JatinProject)
+jat3 <- data.world::query(data.world::qry_sql(
+ "   
+  	select AVG(kwh), avg(nhsldmem/totrooms) as effic, nhsldmem
+    from energy
+    group by nhsldmem
+ "), 
+dataset = JatinProject)
+```
+<p>When we first picked this data and were instructed to find something interesting about it, one of the first things that seemed obvious to check for was the correlation between the number of people living in a house and the total energy used by that house. While I expected there to be an steady increase in the energy used as the number occupants went up, I decided to graph it out to be sure.</p>
+<p>As expected, there was an initial increase in the average energy used as the number of occupants went up. However, much to my suprise, after a certain number of occupants, the energy used stagnated and then  even went down, albeit with 2 outliers.</p>
+```{r}
+renderPlot({
+plot = ggplot(jat1, aes(x=jat1$nhsldmem, y=jat1$avg, fill=jat1$sum)) + 
+  geom_bar(stat='identity') +
+  theme_bw() +
+  geom_bar(stat = 'identity') + 
+  labs(fill ="Number of Records", x="Number of Household Members", y="Average Electricity used in KWH", title="Average Electricity used in Different Household Sizes") + 
+  scale_x_discrete(limits = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
+  plot}, height=500, width=500
+)
+```
+<br>
+<p>Clearly, there were other factors at play here, since it simply didn't make sense to me how more people could use the same amount of energy or even less than more people. After making this insight and sleeping on it for a night, I thought to check the total number of rooms and occupants each house had. I realized that if there people shared rooms, they were likely to use less energy. The plot I generated gave me more reason to believe that I was right, since the average number of rooms for houses with 6, 7, 8, and 9 occupants seemed to be around the same.</p>
+<br>
+```{r}
+renderPlot({
+plot = ggplot(jat2, aes(x=jat2$nhsldmem, y=jat2$rooms, fill=jat2$sum)) + 
+  geom_bar(stat='identity') +
+  theme_bw() +
+  geom_bar(stat= 'identity') + 
+  labs(fill="Number of Records", x="Number of Household Members", y="Average Number of Rooms", title="Average Number of Rooms in Different Households") + 
+  scale_x_discrete(limits = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
+  plot}, height=500, width=500
+)
+```
+<br>
+<p>To confirm my theory that there was an energy efficiency achieved at a certain point by houses with more occupants, I decided to define the "efficiency"" of a house as the number of occupants divided by the total number of rooms in the house. As we can see in thee graph below, the "efficiency" of each house went up as the number of occupants increased. There were a few outliers, which is expected. Since there were fewer records as the number of occupants went up, this means that averages of these reading are not very representative of actual conditions.</p>
+<br>
+```{r}
+renderPlot({
+plot = ggplot(jat3, aes(x=jat3$nhsldmem, y=jat3$avg, fill=jat3$effic)) + 
+  geom_bar(stat='identity') +
+  theme_bw() +
+  geom_bar(stat = 'identity') + 
+  labs(fill="Effciency", x="Number of Household Members", y="Average KWH used", title="Average Energy Efficiency for different Households") + 
+  scale_x_discrete(limits = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
+  plot}, height=500, width=500
+)
+```
