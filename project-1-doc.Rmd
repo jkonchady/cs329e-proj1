@@ -38,5 +38,51 @@ dataset = project)
 <br>
 
 ```{r}
+project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+regions <- data.world::query(data.world::qry_sql(
+ "   
+  	select regionc from energy 
+ "), 
+dataset = project)
+```
 
+```{r}
+inputPanel(
+  selectInput("selectRegion", label = "Select Region",choices = regions, multiple=TRUE, selected=c("Northeast", "Midwest", "South", "West"))
+)
+
+
+```
+
+```{r}
+df <- eventReactive(c(input$selectRegion), { 
+  project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset"  
+  data.world::set_config(cfg_env("DW_API")) 
+  paramQuery <- data.world::qry_sql(
+   "   
+    select *
+    from energy s
+    where regionc in (?, ?, ?, ?)
+order by regionc
+   ")
+  paramQuery$params <- c(input$selectRegion[1], input$selectRegion[2], input$selectRegion[3], input$selectRegion[4])
+  data.world::query(paramQuery, dataset = project)
+}) 
+
+```
+
+```{r}
+Regions <- eventReactive(c(input$selectRegion), { 
+  library('stringr')
+  str_c(input$selectRegion, collapse= ' , ')
+})
+```
+
+```{r}
+renderDataTable({
+  DT::datatable(df(), rownames = FALSE,
+  extensions = list(Responsive = TRUE, FixedHeader = FALSE)
+  )
+})
 ```
