@@ -42,7 +42,7 @@ project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset"
 data.world::set_config(cfg_env("DW_API")) 
 regions <- data.world::query(data.world::qry_sql(
  "   
-  	select regionc from energy 
+  	select distinct regionc from energy 
  "), 
 dataset = project)
 ```
@@ -86,3 +86,48 @@ renderDataTable({
   )
 })
 ```
+
+
+
+
+```{r}
+project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+energy <- data.world::query(data.world::qry_sql(
+ "   
+  	select totrooms, dollarel, regionc from energy
+    where column_a between 1 and 500
+     
+ "), 
+dataset = project)
+```
+
+
+
+
+```{r}
+renderPlot({
+plot = ggplot(energy, aes(x=energy$totrooms, y=energy$dollarel, color =
+                  energy$regionc)) + geom_jitter() + 
+  ggtitle("Number of rooms vs. Energy Cost") + 
+  xlab("Total Number of Rooms") + 
+  ylab("Energy Cost (Dollars)") + 
+  labs(color = "Region")
+  plot},  height = 750, width = 750
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
