@@ -11,6 +11,11 @@ output:
     toc_float: yes
 runtime: shiny
 ---
+##Session Information
+```{r}
+sessionInfo()
+
+```
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -38,7 +43,7 @@ dataset = project)
 ##Links to Data World
 <p>Our data.world project can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009) and the  insights we've made can be viewed [here](https://data.world/ravi-goparaju/residential-energy-consumption-2009/insights)</p>
 <br>
-
+##Data Explored
 ```{r}
 project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
@@ -100,7 +105,7 @@ energy <- data.world::query(data.world::qry_sql(
  "), 
 dataset = project)
 ```
-
+###Factors Affecting Energy Cost
 ```{r}
 renderPlot({
 plot = ggplot(df(), aes(x=totrooms, y=dollarel, color =
@@ -161,8 +166,8 @@ plot = ggplot(df(), aes(x=internet, y=dollarel, color =
 ```
 
 
-<!--Jatin's stuff-->
-###Jatin's Stuff
+
+###Correlation Between Energy Used and Number of Occupants in Households with Different Number of Occupants Across the US
 ```{r}
 JatinProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
@@ -229,8 +234,8 @@ plot = ggplot(jat3, aes(x=jat3$nhsldmem, y=jat3$avg, fill=jat3$effic)) +
   plot}, height=500, width=500
 )
 ```
-<!--Paul's stuff-->
-###Paul's Stuff
+
+###House Construction Affecting Power Construction
 ```{r}
 PaulProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
