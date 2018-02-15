@@ -19,6 +19,8 @@ library(DT)
 library(plotly)
 library(lubridate)
 library(ggplot2)
+library(dplyr)
+library(scales)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -178,4 +180,115 @@ plot = ggplot(jat3, aes(x=jat3$nhsldmem, y=jat3$avg, fill=jat3$effic)) +
   scale_x_discrete(limits = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
   plot}, height=500, width=500
 )
+```
+<!--Paul's stuff-->
+###Paul's Stuff
+```{r}
+PaulProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+paul <- data.world::query(data.world::qry_sql(
+ "   
+  	select * from energy
+ "),
+dataset = PaulProject)
+paul1 <- paul %>% group_by(yearmaderange,walltype) %>% summarise(wallyrnum = n(),kwh = mean(kwh),dol = mean(dollarel)) %>% group_by(yearmaderange)%>% mutate(sum = sum(wallyrnum),pctwall = wallyrnum/sum)
+paul2 = paul %>% group_by(typehuq,yearmaderange) %>% summarise(kwh = mean(kwh)) 
+
+```
+<p>Next, we decided to look into building material and how it would affect the energy outut and cost. I first decided to look into the general trend (if there was one) of wall building material over the last few decades. Our hypothesis was as we moved forward in time we expected wall type to shift towards material that used less energy on average. Of course, there are some variables not considered, such as current building architecture trends or cost of production, but using the data at hand we attempted to visualize this trend using energy output, dollar cost, and ceiling and wall material used. </p>
+<p>In this visualization, I attempted to find out if there was any significant change in wall material used in buildings over time. From this, it appears that Wood had the biggest percentage change, going from ~24% of all buildings having wooden walls to only ~11% in 2005+. In contrast, Aluminum and Stucco seem to have grown over the years and brick remaining relatively stable..</p>
+```{r}
+renderPlot({
+plot = ggplot(paul1,aes(yearmaderange,pctwall,fill = factor(walltype)))+
+  geom_area(stat='identity')+ 
+  scale_fill_discrete(name = 'Wall Material',
+                      labels=c('Brick','Wood','Aluminum','Stucco', 'Shingle','Stone','Concrete','Glass','Other'))+
+  geom_text(aes(label=percent(pctwall),y=pctwall),size = 3,
+            position = position_stack(vjust = 0.5))+ 
+  scale_x_discrete(name = 'Year Built',limits = 
+                     c('-1950','1950','1960','1970','1980','1990','2000','2005+'))+ 
+  scale_y_continuous(labels = scales::percent)+
+  ylab('Percent')+ ggtitle('Change in Wall Material Used in Buildings Over Time')+ 
+  theme(text = element_text(size = 15), strip.text.x = element_blank(), legend.position = 'right', strip.text.y = element_blank(), panel.border = element_blank(), axis.line = element_line(color = 'black'), axis.text.x = element_text(face="bold", color="dark Blue", size=15, angle=70,hjust =1 ), axis.text.y = element_text(face="bold", color="#993333", size=15, angle=0), panel.grid.major.x = element_line(color = 'dark grey'), panel.grid.major.y = element_line(color = 'light grey'), axis.title=element_text(size=14,face="bold"), plot.title = element_text(vjust = 2,size = 23))
+plot}, height=500, width=800)
+```
+<br>
+<p>In this graph we attempted to determine how the average electrical output changed based on year built and type of housing unit. Interestingly, there appears to be a trend to use more electricity with newer buildings. Over time electrical outputs seem to increase no matter the type of housing unit. It is likely that while electrical efficiency may improve over the years, the variety of new technology in households grows as well. Single-Family attached and Mobile Home seem to have even electrical output on average in 2000+, while apartment building with 5+ units has the least output. This seems strange as apartment buildings with 5+ units should have a larger size than 2-4 unit buildings, but this might be due to greater electrical efficiency. </p>
+<br>
+
+```{r}
+renderPlot({
+plot = ggplot(paul,aes(yearmaderange,kwh,color=factor(typehuq)))+ 
+  geom_jitter(stat='identity',width = .5,size=1)+ 
+  scale_colour_manual(labels =c("Mobile Home",'Single-Family Detached','Single-Family Attached', 
+                                'Apartment in Building with 2-4 Units','Apartment Building with 5+ 
+                                Units'), values =c( 'yellow','orange','red','blue','green'))+ 
+  scale_x_discrete(name = 'Year Built',limits =
+                     c('-1950','1950','1960','1970','1980','1990','2000','2005+'),expand = c(0,0))+
+  labs(color = 'Type of Housing Unit') + 
+  ylab('Average Electrical Output (KWH)')+ 
+  ggtitle('Average Electrical Output of Home based on Year Built and Type of Housing Unit')+
+  geom_line(data=paul2,aes(yearmaderange,kwh,color=factor(typehuq)),size = 2) +
+  coord_cartesian(ylim = c(0, 50000)) +theme_minimal()+ 
+  theme(strip.text.x = element_blank(), legend.position = 'right', strip.text.y = element_blank(),   panel.border = element_blank(), axis.line = element_line(color = 'black'), panel.grid.major.x =    element_line(color = 'dark grey'), panel.grid.major.y = element_line(color = 'light grey'),
+        plot.title = element_text(vjust = 2,size = 20))+ scale_y_continuous(expand = c(0, 0))
+        plot}, height=500, width=800)
+```
+
+```{r}
+PaulProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+paul3 <- data.world::query(data.world::qry_sql(
+ "   
+  	select DISTINCT typehuq from energy
+ "),
+dataset = PaulProject)
+```
+
+<br>
+<p>Finally, we chose to visualize both wall material and building type by dollar value with the ability to look at each type on an individual or comparison basis. This way, we were able to determine whether or not certain housing types tended to have higher energy costs than others. From this graph, it seems that the dollar values are relatively similar, with Stucco, Aluminum, Wood, and Brick having a large number of outliers (this is possibly more due to higher number of datapoints for these types).  </p>
+<p>In conlcusion, there seems to be a generally positive trend in average KWH for each housing unit type, while dollar values seem to be relatively stable. It does not appear that wall material popularity is largely influenced by energy costs.</p>
+<br>
+
+```{r}
+inputPanel(
+  selectInput("selectType_1", label = "Select Type of Housing",choices = paul3, multiple=TRUE, selected=c("Mobile Home", "Single-Family Detached", "Single-Family Attached", "Apt 2-4 Units","Apt 5+ Units")))
+```
+
+```{r}
+df1 <- eventReactive(c(input$selectType_1), { 
+  PaulProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+  data.world::set_config(cfg_env("DW_API")) 
+  paramQuery <- data.world::qry_sql(
+   "   
+  	select walltype, typehuq, dollarel
+  	from energy s
+    where typehuq in (?, ?, ?, ?, ?)
+   ")
+  paramQuery$params <- c(input$selectType_1[1], input$selectType_1[2], input$selectType_1[3], input$selectType_1[4],input$selectType_1[5])
+  data.world::query(paramQuery, dataset = PaulProject)
+}) 
+```
+
+
+```{r}
+# Boxplot - see http://ggplot2.tidyverse.org/reference/geom_boxplot.html
+# Notice the need to use df(), and Regions() below:
+renderPlotly({
+  plot = ggplot(df1(),aes(factor(walltype),dollarel,fill = factor(typehuq)))+
+  geom_boxplot()+coord_flip()+
+                        scale_fill_discrete(
+                          name = 'Type of Housing',
+                          labels =c("Mobile Home",'Single-Family Detached','Single-Family Attached',
+                                    'Apt 2-4 Units','Apt 5+ Units'))+
+  scale_x_discrete(name = 'Wall Material',
+                      labels =c('Brick','Wood','Aluminum','Stucco',        'Shingle','Stone','Concrete','Glass','Other'))+ylab('Dollar Value')+
+       theme(strip.text.x = element_blank(),
+       legend.position = 'right', strip.text.y = element_blank(),
+       panel.border = element_blank(), axis.line = element_line(color = 'black'),
+       panel.grid.major.x = element_line(color = 'dark grey'),
+       panel.grid.major.y = element_line(color = 'light grey'),
+       plot.title = element_text(hjust = 0.5))+ scale_y_continuous(expand = c(0, 0))
+      ggplotly(plot, session="knitr", width = 800, height = 500)
+})
 ```
