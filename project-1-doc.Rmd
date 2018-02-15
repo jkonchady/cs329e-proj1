@@ -169,7 +169,7 @@ plot = ggplot(df(), aes(x=internet, y=dollarel, color =
 
 
 
-###Correlation Between Energy Used and Number of Occupants in Households with Different Number of Occupants Across the US
+###Number of Occupants Affecting Average Annual Electricity Usage in the U.S. in 2009
 ```{r}
 JatinProject <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
 data.world::set_config(cfg_env("DW_API")) 
