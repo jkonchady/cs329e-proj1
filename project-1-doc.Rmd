@@ -113,6 +113,54 @@ plot = ggplot(df(), aes(x=totrooms, y=dollarel, color =
 )
 ```
 
+```{r}
+project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset" 
+data.world::set_config(cfg_env("DW_API")) 
+urban_rural <- data.world::query(data.world::qry_sql(
+ "   
+  	select distinct ur from energy 
+ "), 
+dataset = project)
+```
+
+```{r}
+inputPanel(
+  selectInput("selectArea", label = "Select Area",choices = urban_rural, multiple=TRUE, selected=c("Urban", "Rural"))
+)
+
+
+```
+
+```{r}
+df <- eventReactive(c(input$selectArea), { 
+  project <- "https://data.world/ravi-goparaju/s18-edv-project-1-dataset"  
+  data.world::set_config(cfg_env("DW_API")) 
+  paramQuery <- data.world::qry_sql(
+   "   
+    select *
+    from energy s
+    where ur in (?, ?)
+    order by ur
+   ")
+  paramQuery$params <- c(input$selectArea[1], input$selectArea[2])
+  data.world::query(paramQuery, dataset = project)
+}) 
+
+```
+
+```{r}
+renderPlot({
+plot = ggplot(df(), aes(x=internet, y=dollarel, color =
+                  ur)) + geom_point() + 
+  ggtitle("Internet Use vs. Energy Cost") + 
+  xlab("Internet") + 
+  ylab("Energy Cost (Dollars)") + 
+  labs(color = "Region")
+  plot},  height = 300, width = 300
+)
+```
+
+
 <!--Jatin's stuff-->
 ###Jatin's Stuff
 ```{r}
