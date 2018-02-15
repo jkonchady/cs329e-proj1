@@ -116,7 +116,7 @@ plot = ggplot(df(), aes(x=totrooms, y=dollarel, color =
   xlab("Total Number of Rooms") + 
   ylab("Energy Cost (Dollars)") + 
   labs(color = "Region")
-  plot},  height = 750, width = 750
+  plot},  height = 500, width = 500
 )
 ```
 
@@ -163,7 +163,7 @@ plot = ggplot(df(), aes(x=internet, y=dollarel, color =
   xlab("Internet") + 
   ylab("Energy Cost (Dollars)") + 
   labs(color = "Region")
-  plot},  height = 300, width = 300
+  plot},  height = 500, width = 500
 )
 ```
 
