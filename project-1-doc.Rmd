@@ -106,6 +106,8 @@ energy <- data.world::query(data.world::qry_sql(
 dataset = project)
 ```
 ###Factors Affecting Energy Cost
+
+  In this section, we examine different causes which affect the dollar amount spent on electricity in each home in the US. For example, we found that an increase in the number of rooms in a house or a apartment will increase the total amount of money spent on power. This makes sense, since we would expect a larger house or apartment would use more electricity for lighting, appliances, etc. Another aspect is internet usage. In the second graph, we find that for homes which had internet access in 2009, money spent on electricity was higher. We also examine whether a house or apartment was in an urban or rural area, which had a bearing on whether a home had internet. We found that most homes which had internet, were also in urban areas. And, these homes also spent more on electricity.
 ```{r}
 renderPlot({
 plot = ggplot(df(), aes(x=totrooms, y=dollarel, color =
@@ -229,7 +231,7 @@ plot = ggplot(jat3, aes(x=jat3$nhsldmem, y=jat3$avg, fill=jat3$effic)) +
   geom_bar(stat='identity') +
   theme_bw() +
   geom_bar(stat = 'identity') + 
-  labs(fill="Effciency", x="Number of Household Members", y="Average KWH used", title="Average Energy Efficiency for different Households") + 
+  labs(fill="Efficiency", x="Number of Household Members", y="Average KWH used", title="Average Energy Efficiency for different Households") + 
   scale_x_discrete(limits = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
   plot}, height=500, width=500
 )
