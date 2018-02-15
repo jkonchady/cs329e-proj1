@@ -101,8 +101,8 @@ dataset = project)
 
 ```{r}
 renderPlot({
-plot = ggplot(energy, aes(x=energy$totrooms, y=energy$dollarel, color =
-                  energy$regionc)) + geom_jitter() + 
+plot = ggplot(df(), aes(x=totrooms, y=dollarel, color =
+                  regionc)) + geom_jitter() + 
   ggtitle("Number of rooms vs. Energy Cost") + 
   xlab("Total Number of Rooms") + 
   ylab("Energy Cost (Dollars)") + 
